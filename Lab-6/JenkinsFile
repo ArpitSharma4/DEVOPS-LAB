@@ -1,0 +1,44 @@
+pipeline {
+  agent any
+  stages {
+
+    stage('Pre-check Docker') {
+      steps {
+        sh 'docker --version'
+        sh 'docker info'
+      }
+    }
+
+    stage('Setup Workspace') {
+      steps {
+        sh 'cp /path/to/delivery_metrics.py .'
+        sh 'cp /path/to/prometheus.yml .'
+        sh 'cp /path/to/alert_rules.yml .'
+      }
+    }
+
+    stage('Build Exporter Image') {
+      steps {
+        sh 'docker build -t delivery_metrics .'
+      }
+    }
+
+    stage('Run Exporter') {
+      steps {
+        sh 'docker run -d -p 8000:8000 --name delivery_metrics delivery_metrics'
+      }
+    }
+
+    stage('Run Prometheus & Grafana') {
+      steps {
+        sh '''
+          docker run -d --name prometheus -p 9090:9090 \
+          -v $WORKSPACE/prometheus.yml:/etc/prometheus/prometheus.yml \
+          -v $WORKSPACE/alert_rules.yml:/etc/prometheus/alert_rules.yml prom/prometheus
+
+          docker run -d --name grafana -p 3000:3000 grafana/grafana
+        '''
+      }
+    }
+  }
+}
