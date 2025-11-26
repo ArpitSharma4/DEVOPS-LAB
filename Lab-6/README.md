@@ -1,16 +1,28 @@
-# DevOps Lab – Real-Time Monitoring & Alerting (Prometheus + Grafana + Jenkins)
+# DevOps Lab – Real-Time Monitoring & Alerting  
+(Prometheus + Grafana + Jenkins)
 
-# 1. Folder Structure
+---
+
+# 1️⃣ Folder Structure
+```
 delivery_monitoring/
 ├── delivery_metrics.py
 ├── prometheus.yml
 ├── alert_rules.yml
 └── Jenkinsfile
+```
 
-# 2. Python Exporter Setup
+---
+
+# 2️⃣ Python Exporter Setup
+
+Install:
+```bash
 pip install prometheus-client
+```
 
-# delivery_metrics.py
+## delivery_metrics.py
+```python
 from prometheus_client import start_http_server, Summary, Gauge
 import random, time
 
@@ -39,11 +51,17 @@ if __name__ == "__main__":
     while True:
         simulate_delivery()
         time.sleep(1)
+```
 
-# Run exporter
+Run exporter:
+```bash
 python delivery_metrics.py
+```
 
-# 3. Prometheus Setup (prometheus.yml)
+---
+
+# 3️⃣ Prometheus Config (prometheus.yml)
+```yaml
 global:
   scrape_interval: 15s
 
@@ -58,15 +76,21 @@ scrape_configs:
 
 rule_files:
   - "/etc/prometheus/alert_rules.yml"
+```
 
-# 4. Prometheus Alerts (alert_rules.yml)
+---
+
+# 4️⃣ Prometheus Alerts (alert_rules.yml)
+```yaml
 groups:
   - name: delivery_alerts
     rules:
+
       - alert: HighPendingDeliveries
         expr: pending_deliveries > 10
         for: 15s
-        labels: { severity: warning }
+        labels:
+          severity: warning
         annotations:
           summary: "High pending deliveries"
           description: "Pending > 10 for 15s."
@@ -74,59 +98,99 @@ groups:
       - alert: HighAverageDeliveryTime
         expr: (average_delivery_time_seconds_sum / average_delivery_time_seconds_count) > 30
         for: 15s
-        labels: { severity: critical }
+        labels:
+          severity: critical
         annotations:
           summary: "High avg delivery time"
           description: "Avg > 30s for 15s."
+```
 
-# 5. Run Prometheus (PowerShell friendly)
+---
+
+# 5️⃣ Run Prometheus (PowerShell friendly)
+```bash
 docker rm -f prometheus
+
 docker run -d --name prometheus -p 9090:9090 `
  -v C:\DEV-1\Lab-6\prometheus.yml:/etc/prometheus/prometheus.yml `
  -v C:\DEV-1\Lab-6\alert_rules.yml:/etc/prometheus/alert_rules.yml `
  prom/prometheus
+```
 
-# Prometheus URLs
+Prometheus URLs:
+```
 http://localhost:9090
 http://localhost:9090/targets
 http://localhost:9090/alerts
+```
 
-# 6. Run Grafana
+---
+
+# 6️⃣ Run Grafana
+```bash
 docker rm -f grafana
 docker run -d --name grafana -p 4000:3000 grafana/grafana
+```
 
-# Grafana URL
-http://localhost:4000  (admin/admin)
+Grafana:
+```
+http://localhost:4000   (admin / admin)
+```
 
-# 7. Grafana Panels (Run these as Queries)
+---
+
+# 7️⃣ Grafana Panel Queries
+```
 total_deliveries
 pending_deliveries
 on_the_way_deliveries
 average_delivery_time_seconds_sum / average_delivery_time_seconds_count
+```
 
-# 8. Trigger Alerts
-# Modify in delivery_metrics.py:
+---
+
+# 8️⃣ Trigger Alerts
+
+Modify in `delivery_metrics.py`:
+```python
 pending = random.randint(50, 100)
+```
 
-# Restart:
+Restart:
+```bash
 python delivery_metrics.py
+```
 
-# Alerts will fire in:
+Alerts will fire at:
+```
 http://localhost:9090/alerts
+```
 
-# 9. Jenkins Setup
+---
+
+# 9️⃣ Jenkins Setup
+
+Run Jenkins with Docker access:
+```bash
 docker rm -f jenkins
+
 docker run -d --name jenkins -p 8080:8080 -p 50000:50000 `
  -v jenkins_home:/var/jenkins_home `
  -v //var/run/docker.sock:/var/run/docker.sock `
  jenkins/jenkins:lts
+```
 
-# Get Jenkins password:
+Get Jenkins password:
+```bash
 docker exec -it jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```
 
-# Jenkins → New Item → Pipeline → paste Jenkinsfile below
+Jenkins → New Item → Pipeline → paste Jenkinsfile below.
 
-# 10. Jenkinsfile (VSCode compatible)
+---
+
+# 🔟 Jenkinsfile
+```groovy
 pipeline {
     agent any
 
@@ -187,12 +251,26 @@ pipeline {
         }
     }
 }
+```
 
-# 11. Final Validation Checklist
-# 1. http://localhost:8000/metrics → Python exporter OK
-# 2. http://localhost:9090/targets → Prometheus target UP
-# 3. http://localhost:9090/alerts → Alerts firing
-# 4. http://localhost:4000 → Grafana dashboard working
-# 5. Jenkins pipeline builds everything end-to-end
+---
 
-# End of README
+# 1️⃣1️⃣ Final Validation Checklist
+
+✔ Python Exporter running  
+http://localhost:8000/metrics  
+
+✔ Prometheus target UP  
+http://localhost:9090/targets  
+
+✔ Alerts firing  
+http://localhost:9090/alerts  
+
+✔ Grafana dashboard working  
+http://localhost:4000  
+
+✔ Jenkins pipeline builds exporter + Prometheus + Grafana  
+
+---
+
+# ✅ End of README
