@@ -1,9 +1,10 @@
-# ✅ LAB 2 – Deploy Flask App on Kubernetes
-📌 Step 0 — Files Needed
+## 🧪 Lab 2 – Deploy Flask App on Kubernetes  
+### 📌 Steps & Commands  
 
-Create these inside one folder:
+---
 
-app.py
+### **1️⃣ Create Flask Application (`app.py`)**
+```python
 from flask import Flask
 app = Flask(__name__)
 
@@ -13,15 +14,23 @@ def home():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=15000)
+```
 
-Dockerfile
+---
+
+### **2️⃣ Create Dockerfile**
+```dockerfile
 FROM python:3.8-slim
 WORKDIR /app
 COPY . /app
 RUN pip install flask
 CMD ["python", "app.py"]
+```
 
-flask-deployment.yaml
+---
+
+### **3️⃣ Create Kubernetes Deployment File (`flask-deployment.yaml`)**
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -54,59 +63,75 @@ spec:
   - port: 15000
     targetPort: 15000
   type: NodePort
+```
 
-# 🚀 Execution Steps & Commands
-📌 Step 1 — Start Minikube
-using
+---
+
+### **4️⃣ Start Minikube**
+```bash
 minikube start --driver=docker
+```
 
-📌 Step 2 — Use Minikube’s Docker Daemon
-using
+---
+
+### **5️⃣ Configure Docker to Use Minikube**
+```powershell
 & minikube -p minikube docker-env --shell powershell | Invoke-Expression
-
+```
 
 Verify:
-
+```bash
 docker info
+```
 
-📌 Step 3 — Build Flask Docker Image
-using
+---
+
+### **6️⃣ Build Docker Image**
+```bash
 docker build -t flask-app:latest .
+```
 
-📌 Step 4 — Deploy Flask App
-using
+---
+
+### **7️⃣ Deploy to Kubernetes**
+```bash
 kubectl apply -f flask-deployment.yaml
+```
 
-📌 Step 5 — Check Deployment
-using
+---
+
+### **8️⃣ Check Deployment**
+```bash
 kubectl get deployments
+```
 
-📌 Step 6 — Check Pods
-using
+---
+
+### **9️⃣ Check Pods**
+```bash
 kubectl get pods -l app=flask-app
+```
 
-📌 Step 7 — View Logs (Optional)
-using
-kubectl logs <pod-name>
+---
 
-📌 Step 8 — Access the Flask App
-
-Get external URL:
-
+### **🔟 Access the App**
+```bash
 minikube service flask-app-service --url
-
+```
 
 Example output:
-
+```
 http://127.0.0.1:36157
+```
 
-
-Test using curl:
-
+Test:
+```bash
 curl http://127.0.0.1:36157
+```
 
-
-Or open the URL in your browser →
 You should see:
-
+```
 Hello from Flask on Kubernetes!
+```
+
+---
