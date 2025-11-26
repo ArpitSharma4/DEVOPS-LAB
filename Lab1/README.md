@@ -1,34 +1,43 @@
-# ✅ LAB 1 – Deploy Nginx on Kubernetes
-📌 Step 1 — Start Minikube
-using
+## 🧪 Lab 1 – Deploy Nginx on Kubernetes
+### 📌 Steps & Commands  
+
+---
+
+### **1️⃣ Start Minikube**
+```bash
 minikube start --driver=docker
+```
 
-📌 Step 2 — Create Nginx Pod
-using
+---
+
+### **2️⃣ Create Nginx Pod**
+```bash
 kubectl run hello-k8s --image=nginx --port=80
+```
 
-📌 Step 3 — Check Pod Status
-using
+---
+
+### **3️⃣ Check Pod**
+```bash
 kubectl get pods
+```
 
-📌 Step 4 — Expose Pod as NodePort
-using
+---
+
+### **4️⃣ Expose Pod as NodePort**
+```bash
 kubectl expose pod hello-k8s --type=NodePort --port=80
+```
 
-📌 Step 5 — Check Services
-using
-kubectl get svc
+---
 
-📌 Step 6 — Access the App
-
-Auto-open:
-
+### **5️⃣ Access the Application**
+```bash
 minikube service hello-k8s
+```
 
+OR
 
-Or get URL manually:
-
+```bash
 minikube service hello-k8s --url
-
-
-Paste URL in browser → Nginx welcome page.
+```
