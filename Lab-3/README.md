@@ -34,7 +34,8 @@ def buy():
 def health():
     return {"status": "healthy", "pod": socket.gethostname()}
 
----
+# ------------------------------------------------------------
+
 
 ### 2️⃣ Create Dockerfile
 FROM python:3.11-slim
@@ -43,7 +44,7 @@ COPY . .
 RUN pip install --no-cache-dir flask gunicorn
 CMD ["gunicorn","-b","0.0.0.0:5000","app:app","--workers","1","--threads","2"]
 
----
+# ------------------------------------------------------------
 
 ### 3️⃣ Create ReplicaSet + Service (flashsale-replicaset.yaml)
 ```yaml
@@ -94,18 +95,20 @@ spec:
     targetPort: 5000
   type: ClusterIP
 
----
+# ------------------------------------------------------------
 
 ### 4️⃣ Start Minikube
 minikube start --nodes=1
 
----
+# ------------------------------------------------------------
+
 
 ### 5️⃣ (Optional) Clean Previous Minikube
 minikube stop
 minikube delete
 
----
+# ------------------------------------------------------------
+
 
 ### 6️⃣ If NOT using DockerHub — Build Image Inside Minikube
 Windows PowerShell:
@@ -114,22 +117,25 @@ Windows PowerShell:
 Build:
 docker build -t flashsale:1.0 .
 
----
+# ------------------------------------------------------------
+
 
 ### 7️⃣ Deploy ReplicaSet + Service
 kubectl apply -f flashsale-replicaset.yaml
 
----
+# ------------------------------------------------------------
+
 
 ### 8️⃣ Check ReplicaSet
 kubectl get rs
 
----
+# ------------------------------------------------------------
 
 ### 9️⃣ Check Pods
 kubectl get pods -l app=flashsale
 
----
+# ------------------------------------------------------------
+
 
 ### 🔟 Access the Application
 kubectl port-forward svc/flashsale-svc 8000:80
@@ -140,19 +146,22 @@ http://localhost:8000/
 Test:
 curl http://localhost:8000/buy?user=arpit
 
----
+# ------------------------------------------------------------
+
 
 ### 1️⃣1️⃣ Scale the ReplicaSet
 kubectl scale rs flashsale-rs --replicas=5
 
----
+# ------------------------------------------------------------
+
 
 ### 1️⃣2️⃣ Verify Scaling
 kubectl get pods -l app=flashsale
 kubectl get rs
 kubectl get pods -o wide
 
----
+# ------------------------------------------------------------
+
 
 ### 1️⃣3️⃣ Test Self-Healing (Delete a Pod)
 kubectl delete pod <pod-name>
@@ -160,7 +169,8 @@ kubectl delete pod <pod-name>
 Verify:
 kubectl get pods -l app=flashsale
 
----
+# ------------------------------------------------------------
+
 
 ### 1️⃣4️⃣ Cleanup (Optional)
 kubectl delete -f flashsale-replicaset.yaml
