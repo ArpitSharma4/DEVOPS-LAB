@@ -3,26 +3,34 @@
 ---
 
 # STEP 1 — REMOVE OLD JENKINS
+```bash
 docker rm -f jenkins
+```
 
 ---
 
 # STEP 2 — RUN JENKINS (WITH DOCKER ACCESS)
+```bash
 docker run -d --name jenkins `
  -p 8080:8080 -p 50000:50000 `
  -v jenkins_home:/var/jenkins_home `
  -v //var/run/docker.sock:/var/run/docker.sock `
  jenkins/jenkins:lts
+```
 
 ---
 
 # STEP 3 — VERIFY JENKINS IS RUNNING
+```bash
 docker ps
+```
 
 ---
 
 # STEP 4 — GET INITIAL ADMIN PASSWORD
+```bash
 docker exec -it jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```
 
 Open Jenkins:  
 http://localhost:8080  
@@ -31,9 +39,11 @@ Enter password → Install Suggested Plugins → Create admin user → Continue
 ---
 
 # STEP 5 — CREATE NEW PIPELINE JOB
+
 Jenkins Dashboard → New Item → Pipeline → OK  
 Scroll to “Pipeline Script” → paste:
 
+```groovy
 pipeline {
     agent any
 
@@ -94,25 +104,27 @@ pipeline {
         }
     }
 }
+```
 
 ---
 
 # STEP 6 — RUN PIPELINE
-delivery-monitoring-pipeline → Build Now
+delivery-monitoring-pipeline → **Build Now**
 
 ---
 
 # STEP 7 — CHECK SERVICES
+
 Python Exporter:  
 http://localhost:8000/metrics  
 
 Prometheus:  
 http://localhost:9090  
 
-Prometheus Targets:  
+Targets:  
 http://localhost:9090/targets  
 
-Prometheus Alerts:  
+Alerts:  
 http://localhost:9090/alerts  
 
 Grafana:  
@@ -121,13 +133,22 @@ http://localhost:4000  (admin/admin)
 ---
 
 # STEP 8 — TRIGGER ALERTS
-Edit delivery_metrics.py:
+
+Edit **delivery_metrics.py**:
 
 Change:
+```python
 pending = random.randint(10, 20)
+```
 
 To:
+```python
 pending = random.randint(50, 100)
+```
 
 Restart exporter:
+```bash
 python delivery_metrics.py
+```
+
+---
