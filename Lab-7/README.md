@@ -1,38 +1,38 @@
-# ================================
+# 🚀 LAB — JENKINS + DOCKER + PROMETHEUS + GRAFANA PIPELINE
+
+---
+
 # STEP 1 — REMOVE OLD JENKINS
-# ================================
 docker rm -f jenkins
 
-# ================================
+---
+
 # STEP 2 — RUN JENKINS (WITH DOCKER ACCESS)
-# Required for CI pipelines to run Docker builds
-# ================================
 docker run -d --name jenkins `
  -p 8080:8080 -p 50000:50000 `
  -v jenkins_home:/var/jenkins_home `
  -v //var/run/docker.sock:/var/run/docker.sock `
  jenkins/jenkins:lts
 
-# ================================
+---
+
 # STEP 3 — VERIFY JENKINS IS RUNNING
-# ================================
 docker ps
 
-# ================================
+---
+
 # STEP 4 — GET INITIAL ADMIN PASSWORD
-# ================================
 docker exec -it jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
-# Copy the password → open Jenkins in browser:
-# http://localhost:8080
-# Enter password → Install Suggested Plugins → Create admin user → Continue
+Open Jenkins:  
+http://localhost:8080  
+Enter password → Install Suggested Plugins → Create admin user → Continue
 
-# ================================
+---
+
 # STEP 5 — CREATE NEW PIPELINE JOB
-# (In Jenkins UI)
-# ================================
-# Jenkins Dashboard → New Item → Pipeline → OK
-# Scroll to "Pipeline Script" → Paste below:
+Jenkins Dashboard → New Item → Pipeline → OK  
+Scroll to “Pipeline Script” → paste:
 
 pipeline {
     agent any
@@ -95,39 +95,39 @@ pipeline {
     }
 }
 
-# ================================
+---
+
 # STEP 6 — RUN PIPELINE
-# ================================
-# In Jenkins:
-# delivery-monitoring-pipeline → Build Now
+delivery-monitoring-pipeline → Build Now
 
-# ================================
+---
+
 # STEP 7 — CHECK SERVICES
-# ================================
-# Python Exporter:
-# http://localhost:8000/metrics
+Python Exporter:  
+http://localhost:8000/metrics  
 
-# Prometheus:
-# http://localhost:9090
+Prometheus:  
+http://localhost:9090  
 
-# Prometheus Targets:
-# http://localhost:9090/targets
+Prometheus Targets:  
+http://localhost:9090/targets  
 
-# Prometheus Alerts:
-# http://localhost:9090/alerts
+Prometheus Alerts:  
+http://localhost:9090/alerts  
 
-# Grafana:
-# http://localhost:4000  (admin/admin)
+Grafana:  
+http://localhost:4000  (admin/admin)
 
-# ================================
+---
+
 # STEP 8 — TRIGGER ALERTS
-# ================================
-# Edit delivery_metrics.py:
-# Change:
+Edit delivery_metrics.py:
+
+Change:
 pending = random.randint(10, 20)
 
-# To:
+To:
 pending = random.randint(50, 100)
 
-# Restart exporter:
+Restart exporter:
 python delivery_metrics.py
