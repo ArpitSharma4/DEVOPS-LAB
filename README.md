@@ -1,6 +1,7 @@
-🧪 Lab 1 – Deploy Nginx on Kubernetes
+📌 Lab 1 – Deploy Nginx on Kubernetes
 Steps & Commands
 1️⃣ Start Minikube
+'''bash
 minikube start --driver=docker
 
 2️⃣ Create Nginx Pod
