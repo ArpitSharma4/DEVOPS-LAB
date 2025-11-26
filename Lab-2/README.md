@@ -57,9 +57,11 @@ spec:
 
 # 🚀 Execution Steps & Commands
 📌 Step 1 — Start Minikube
+using
 minikube start --driver=docker
 
 📌 Step 2 — Use Minikube’s Docker Daemon
+using
 & minikube -p minikube docker-env --shell powershell | Invoke-Expression
 
 
@@ -68,18 +70,23 @@ Verify:
 docker info
 
 📌 Step 3 — Build Flask Docker Image
+using
 docker build -t flask-app:latest .
 
 📌 Step 4 — Deploy Flask App
+using
 kubectl apply -f flask-deployment.yaml
 
 📌 Step 5 — Check Deployment
+using
 kubectl get deployments
 
 📌 Step 6 — Check Pods
+using
 kubectl get pods -l app=flask-app
 
 📌 Step 7 — View Logs (Optional)
+using
 kubectl logs <pod-name>
 
 📌 Step 8 — Access the Flask App
