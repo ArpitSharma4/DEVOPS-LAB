@@ -1,25 +1,28 @@
-# Multi-Node Kubernetes Cluster for Product Catalog & Shopping Cart
-# (Windows + VS Code + Minikube + Docker Driver)
+# Multi-Node Kubernetes Cluster for Product Catalog & Shopping Cart  
+(Windows + VS Code + Minikube + Docker Driver)
 
 ---
 
 # 0️⃣ CLEAN UP EXISTING MINIKUBE
+```bash
 minikube stop
 minikube delete
+```
 
 ---
 
 # 1️⃣ START MULTI-NODE MINIKUBE CLUSTER (3 NODES)
+```bash
 minikube start --nodes 3 -p devops-multinode --force
-
-Enable registry:
 minikube -p devops-multinode addons enable registry
+```
 
 ---
 
 # 2️⃣ CREATE APPLICATION FILES (WINDOWS + VS CODE)
 
-product_catalog.py
+## product_catalog.py
+```python
 from flask import Flask, jsonify
 
 app = Flask(__name__)
@@ -36,9 +39,10 @@ def get_products():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)
+```
 
-
-shopping_cart.py
+## shopping_cart.py
+```python
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -57,47 +61,52 @@ def add_to_cart():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)
+```
 
 ---
 
-# 3️⃣ DOCKERIZE BOTH APPS (POWERSHELL)
+# 3️⃣ DOCKERIZE BOTH APPS (WINDOWS POWERSHELL)
 
-Dockerfile.product
+## Dockerfile.product
+```dockerfile
 FROM python:3.9-slim
 WORKDIR /app
 COPY product_catalog.py /app/
 RUN pip install flask
 CMD ["python", "product_catalog.py"]
+```
 
-Dockerfile.shopping
+## Dockerfile.shopping
+```dockerfile
 FROM python:3.9-slim
 WORKDIR /app
 COPY shopping_cart.py /app/
 RUN pip install flask
 CMD ["python", "shopping_cart.py"]
+```
 
-Build:
+### Build images
+```bash
 docker build -t product-catalog:latest -f Dockerfile.product .
 docker build -t shopping-cart:latest -f Dockerfile.shopping .
-
-List:
 docker images
+```
 
 ---
 
 # 4️⃣ LOAD IMAGES INTO MINIKUBE (WSL)
-
+```bash
 minikube -p devops-multinode image load product-catalog:latest
 minikube -p devops-multinode image load shopping-cart:latest
-
-Verify:
 minikube -p devops-multinode ssh -- docker images
+```
 
 ---
 
 # 5️⃣ CREATE DEPLOYMENTS (WINDOWS)
 
-product_catalog_deployment.yaml
+## product_catalog_deployment.yaml
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -125,9 +134,10 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 80
+```
 
-
-shopping_cart_deployment.yaml
+## shopping_cart_deployment.yaml
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -155,16 +165,20 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 80
+```
 
-Apply:
+### Apply deployments
+```bash
 kubectl apply -f product_catalog_deployment.yaml
 kubectl apply -f shopping_cart_deployment.yaml
+```
 
 ---
 
 # 6️⃣ CREATE SERVICES
 
-product_catalog_service.yaml
+## product_catalog_service.yaml
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -176,8 +190,10 @@ spec:
   - port: 80
     targetPort: 80
   type: NodePort
+```
 
-shopping_cart_service.yaml
+## shopping_cart_service.yaml
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -189,65 +205,71 @@ spec:
   - port: 80
     targetPort: 80
   type: NodePort
+```
 
-Apply:
+### Apply services
+```bash
 kubectl apply -f product_catalog_service.yaml
 kubectl apply -f shopping_cart_service.yaml
+```
 
 ---
 
 # 7️⃣ VERIFY POD DISTRIBUTION
+```bash
 kubectl get pods -o wide
+```
 
-Expected:
-- 2 Product Catalog pods on different nodes  
-- 3 Shopping Cart pods across all nodes  
+Expected:  
+✔ 2 Product Catalog pods on different nodes  
+✔ 3 Shopping Cart pods spread across cluster
 
 ---
 
 # 8️⃣ ACCESS SERVICES (WINDOWS)
 
-Get Product Catalog URL:
+### Product Catalog
+```bash
 minikube -p devops-multinode service product-catalog-service --url
+```
 
-Example:
-http://192.168.49.2:<nodeport>/products
-
-Get Shopping Cart URL:
+### Shopping Cart
+```bash
 minikube -p devops-multinode service shopping-cart-service --url
-
-Example:
-http://192.168.49.2:<nodeport>/cart
+```
 
 ---
 
 # 9️⃣ TEST USING POWERSHELL
 
-GET PRODUCTS
+### GET PRODUCTS
+```powershell
 Invoke-WebRequest -Uri "http://127.0.0.1:<port>/products" -Method GET
+```
 
-GET CART
+### GET CART
+```powershell
 Invoke-WebRequest -Uri "http://127.0.0.1:<port>/cart" -Method GET
+```
 
-POST ADD ITEM
+### ADD TO CART
+```powershell
 Invoke-WebRequest -Uri "http://127.0.0.1:<port>/cart" `
   -Method POST `
   -ContentType "application/json" `
   -Body '{"id":1,"name":"Laptop","quantity":1}'
-
-Refresh:
-Invoke-WebRequest -Uri "http://127.0.0.1:<port>/cart" -Method GET
+```
 
 ---
 
 # 🔟 SUMMARY
-✔ Multi-node Minikube cluster  
+✔ 3-node Minikube cluster  
 ✔ Product Catalog (GET /products)  
 ✔ Shopping Cart (GET + POST /cart)  
-✔ Pods anti-affinity across nodes  
+✔ Anti-affinity scheduling  
 ✔ Docker images loaded into Minikube  
 ✔ NodePort services tested  
-✔ Windows + WSL compatible workflow  
+✔ Windows + WSL workflow  
 
 ---
 
