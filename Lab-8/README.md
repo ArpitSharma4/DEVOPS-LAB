@@ -29,13 +29,13 @@
 # =====================================
 # ✅ 3. Create Script Locally (Windows)
 # =====================================
-mkdir devops-sample-code
-cd devops-sample-code
-New-Item hello-world.sh
-notepad hello-world.sh
+mkdir devops-sample-code  
+cd devops-sample-code  
+New-Item hello-world.sh  
+notepad hello-world.sh  
 
 Paste:
-#!/bin/bash
+#!/bin/bash  
 echo "Hello, Jenkins!"
 
 ---
@@ -43,33 +43,33 @@ echo "Hello, Jenkins!"
 # =====================================
 # ✅ 4. Initialize Git
 # =====================================
-git init
-git config --global user.name "Your Name"
-git config --global user.email "your-email@example.com"
+git init  
+git config --global user.name "Your Name"  
+git config --global user.email "your-email@example.com"  
 
 ---
 
 # =====================================
 # ✅ 5. Add & Commit Script
 # =====================================
-git add hello-world.sh
-git commit -m "Added hello-world script"
+git add hello-world.sh  
+git commit -m "Added hello-world script"  
 
 ---
 
 # =====================================
 # ✅ 6. Connect Local Repo to GitHub
 # =====================================
-git remote add origin https://github.com/<username>/devops-sample-code.git
+git remote add origin https://github.com/<username>/devops-sample-code.git  
 
 ---
 
 # =====================================
 # ✅ 7. Push to GitHub
 # =====================================
-git push -u origin main
+git push -u origin main  
 
-Login:
+Login:  
 Username → GitHub username  
 Password → PAT token  
 
@@ -81,10 +81,10 @@ Password → PAT token
 # ⚙️ 8. Install & Run Jenkins (Docker)
 # =====================================
 
-docker run -d -p 8080:8080 -p 50000:50000 --name jenkins jenkins/jenkins:lts
+docker run -d -p 8080:8080 -p 50000:50000 --name jenkins jenkins/jenkins:lts  
 
 Check:
-docker ps
+docker ps  
 
 ---
 
@@ -92,10 +92,10 @@ docker ps
 # 🔑 9. Get Jenkins Admin Password
 # =====================================
 
-docker exec -it jenkins bash
-cat /var/jenkins_home/secrets/initialAdminPassword
+docker exec -it jenkins bash  
+cat /var/jenkins_home/secrets/initialAdminPassword  
 
-Open Jenkins:
+Open Jenkins:  
 http://localhost:8080  
 Paste password → continue setup  
 
@@ -129,28 +129,28 @@ Save.
 # =====================================
 
 ## 🔹 Source Code Management → Git
-Repository URL:
-https://github.com/<username>/devops-sample-code.git
+Repository URL:  
+https://github.com/<username>/devops-sample-code.git  
 
-Credentials → github-creds
+Credentials → github-creds  
 
 ## 🔹 Build Step → Execute Shell
-sh hello-world.sh
+sh hello-world.sh  
 
 ---
 
 # =====================================
 # 🚀 13. Run the Job
 # =====================================
-Click **Build Now**
+Click **Build Now**  
 
 ---
 
 # =====================================
 # 🎉 14. Expected Output
 # =====================================
-Hello, Jenkins!
-Finished: SUCCESS
+Hello, Jenkins!  
+Finished: SUCCESS  
 
 ---
 
