@@ -1,27 +1,8 @@
-# 🚀 Lab 2: Deploy a Flask App Using Docker + YAML
-### 📝 Description
+# ✅ LAB 2 – Deploy Flask App on Kubernetes
+📌 Step 0 — Files Needed
 
-This lab teaches how to deploy your own Python Flask application on Kubernetes.
-You will:
+Create these inside one folder:
 
-Build a Docker image
-
-Configure Minikube’s Docker environment
-
-Deploy using a Kubernetes Deployment manifest
-
-Expose the app using a Service
-
-Access the Flask API in your browser
-
-## 📂 Project Structure
-flask-k8s/
-│
-├── app.py
-├── Dockerfile
-└── flask-deployment.yaml
-
-## 📄 Files
 app.py
 from flask import Flask
 app = Flask(__name__)
@@ -74,14 +55,11 @@ spec:
     targetPort: 15000
   type: NodePort
 
-## 🧪 Steps & Commands
-### 1️⃣ Start Minikube
+# 🚀 Execution Steps & Commands
+📌 Step 1 — Start Minikube
 minikube start --driver=docker
 
-### 2️⃣ Point Docker CLI to Minikube’s Docker Daemon
-
-This ensures images are built inside Minikube so Kubernetes can access them.
-
+📌 Step 2 — Use Minikube’s Docker Daemon
 & minikube -p minikube docker-env --shell powershell | Invoke-Expression
 
 
@@ -89,39 +67,39 @@ Verify:
 
 docker info
 
-### 3️⃣ Build the Flask Docker Image
-
-Run this inside the folder containing Dockerfile and app.py:
-
+📌 Step 3 — Build Flask Docker Image
 docker build -t flask-app:latest .
 
-### 4️⃣ Deploy Flask App to Kubernetes
+📌 Step 4 — Deploy Flask App
 kubectl apply -f flask-deployment.yaml
 
-### 5️⃣ Verify Deployment & Pods
+📌 Step 5 — Check Deployment
 kubectl get deployments
+
+📌 Step 6 — Check Pods
 kubectl get pods -l app=flask-app
 
-### 6️⃣ View Pod Logs
+📌 Step 7 — View Logs (Optional)
 kubectl logs <pod-name>
 
+📌 Step 8 — Access the Flask App
 
-Expected:
-
-Running on http://0.0.0.0:15000
-
-### 7️⃣ Access the Flask Application
-
-Get service URL:
+Get external URL:
 
 minikube service flask-app-service --url
 
 
-Example:
+Example output:
 
 http://127.0.0.1:36157
 
 
-Open in browser → You should see:
+Test using curl:
+
+curl http://127.0.0.1:36157
+
+
+Or open the URL in your browser →
+You should see:
 
 Hello from Flask on Kubernetes!
