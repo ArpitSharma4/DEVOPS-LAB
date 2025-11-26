@@ -4,7 +4,7 @@
 ---
 
 ### 1️⃣ Create Flask Flash Sale Application (app.py)
-```yaml
+```python
 from flask import Flask, request
 import socket, time, random
 
